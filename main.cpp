@@ -12,6 +12,7 @@
 #include"VBO.h"
 #include"EBO.h"
 #include"Texture.h"
+#include"Camera.h"
 
 // Интерливированный (interleaved) массив вершинных атрибутов: Позиция (vec3) и Цвет (vec3)
 GLfloat vertices[] = {
@@ -81,7 +82,6 @@ int main()
 	int HEIGHT = 800;
 
 	GLfloat backgroundColor[] = { 0.69f, 0.55f, 0.8f }; // Нормализованные RGBA значения цвета очистки
-	GLfloat scale = -0.5f;                               // Скалярное значение для uniform-переменной
 
 	// Инстанцирование объекта окна и создание ассоциированного контекста OpenGL
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Hello world!", NULL, NULL);
@@ -120,20 +120,15 @@ int main()
 	VBO1.Unbind(); // Развязка GL_ARRAY_BUFFER
 	EBO1.Unbind(); // Развязка GL_ELEMENT_ARRAY_BUFFER
 
-	// Получение хэндлов (расположений) uniform-переменных из скомпилированной шейдерной программы
-	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-	GLuint timeID = glGetUniformLocation(shaderProgram.ID, "time"); // ДОБАВИЛИ: Локация uniform-переменной времени
-
 	//Текстура
 	Texture grassBlock("grass.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
 	grassBlock.texIUnit(shaderProgram, "tex0", 0);
 
-	float rotation = 0.0f;
-	double prevTime = glfwGetTime();
-	float speed = 1.5f;
-
 	glEnable(GL_DEPTH_TEST);
 
+	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
+
+	double lastTime = glfwGetTime();
 
 	// Основной цикл обработки сообщений и рендеринга (Render Loop)
 	while (!glfwWindowShouldClose(window))
@@ -144,51 +139,15 @@ int main()
 
 		shaderProgram.Activate(); // Инжект шейдерной программы в текущий пайплайн
 
-		//АНИМАЦИЯ КУБА
-		double crntTime = glfwGetTime();
-		// Вычисляем дельту времени (сколько секунд прошло с прошлого кадра)
-		float deltaTime = (float)(crntTime - prevTime);
-		prevTime = crntTime;
+		//Дельта тайм
+		double curTime = glfwGetTime();
+		float deltaTime = (float)(curTime - lastTime);
+		lastTime = curTime;
 
-		// Увеличиваем угол плавно. 45.0f — это скорость в градусах в секунду
-		rotation += speed * 45.0f * deltaTime;
+		//Камера
+		camera.Inputs(window, deltaTime);
+		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 proj = glm::mat4(1.0f);
-
-		// Вращаем плавно по радианам, изменив ось на более красивую (например, X и Y)
-		float time = (float)glfwGetTime();
-
-		// Вычисляем динамические углы поворота для каждой оси (в радианах)
-		float rotX = time * speed;
-		float rotY = time * (speed * 0.7f) + std::sin(time * 0.5f); // Смещаем фазу синусом
-		float rotZ = time * (speed * 0.4f) + std::cos(time * 0.8f); // Смещаем фазу косинусом
-
-		// Последовательно вращаем куб по всем трем осям
-		model = glm::rotate(model, rotX, glm::vec3(1.0f, 0.0f, 0.0f)); // Вращение вокруг X
-		model = glm::rotate(model, rotY, glm::vec3(0.0f, 1.0f, 0.0f)); // Вращение вокруг Y
-		model = glm::rotate(model, rotZ, glm::vec3(0.0f, 0.0f, 1.0f)); // Вращение вокруг Z
-
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
-		// Защита от деления на ноль при расчете Aspect Ratio
-		float aspect = (HEIGHT > 0) ? (float)WIDTH / (float)HEIGHT : 1.0f;
-		proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
-
-
-		int modelLocation = glGetUniformLocation(shaderProgram.ID, "model");
-		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-		int viewLocation = glGetUniformLocation(shaderProgram.ID, "view");
-		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
-		int projLocation = glGetUniformLocation(shaderProgram.ID, "proj");
-		glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(proj));
-
-
-		// Динамическое обновление стейта на основе встроенного высокоточного таймера GLFW
-		float currentTime = glfwGetTime(); // Получение дельты времени в секундах
-
-		glUniform1f(uniID, scale); // Передача скаляра масштабирования в uniform-регистр GPU
-		glUniform1f(timeID, currentTime); // ДОБАВИЛИ: Передача значения времени для внутренней процедурной графики фрагментного шейдера
 		grassBlock.Bind();
 
 		VAO1.Bind(); // Контекстная активация сконфигурированных вершинных атрибутов
