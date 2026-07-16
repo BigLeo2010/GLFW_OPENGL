@@ -57,7 +57,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum pixelTyp
 }
 
 // Привязка uniform-переменной (семплера) шейдера к конкретному порядковому номеру текстурного юнита
-void Texture::texIUnit(Shader shader, const char* uniform, GLuint unit) {
+void Texture::texIUnit(Shader& shader, const char* uniform, GLuint unit) {
 	// Находим позицию uniform-переменной в скомпилированном шейдере по её имени (например, "tex0")
 	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
 

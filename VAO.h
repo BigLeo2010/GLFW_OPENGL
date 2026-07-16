@@ -10,7 +10,7 @@ public:
 	VAO(); // Конструктор для создания объекта
 
 	// Метод для связывания буфера вершин (VBO) с настройками этого VAO
-	void LinkAttrib(VBO VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stribe, void* offset);
+	void LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stribe, void* offset);
 	void Bind(); // Включить этот VAO
 	void Unbind(); // Выключить (отвязать) этот VAO
 	void Delete(); // Удалить VAO из памяти видеокарты

@@ -6,7 +6,7 @@ VAO::VAO() {
 }
 
 // Метод для связывания VBO с этим VAO
-void VAO::LinkAttrib(VBO VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stribe, void* offset) {
+void VAO::LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stribe, void* offset) {
 	VBO.Bind(); // Включаем нужный буфер вершин (VBO)
 
 	// Настраиваем, как видеокарта должна читать данные (размер шага изменен на 0, так как данные идут вплотную)

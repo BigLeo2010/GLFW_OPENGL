@@ -11,11 +11,15 @@ out vec2 texCoord;
 
 uniform float scale; // Глобальная переменная (юниформ) из C++ для динамического изменения масштаба
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 proj;
+
 void main()
 {
 	// Вычисляем итоговые координаты вершины на экране с учетом масштабирования (scale).
 	// Формула (aPos + aPos * scale) увеличивает или уменьшает фигуру относительно центра координат.
-	gl_Position = vec4(aPos.x + aPos.x * scale, aPos.y + aPos.y * scale, aPos.z + aPos.z * scale, 1.0);
+	gl_Position = proj * view * model * vec4(aPos + aPos * scale, 1.0f);
 	
 	color = aColor; // Передаем входной цвет во фрагментный шейдер без изменений
 	texCoord = aTex;

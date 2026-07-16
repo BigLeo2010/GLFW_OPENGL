@@ -27,7 +27,7 @@ public:
 	 * @param uniform - Имя uniform-переменной в GLSL коде (например, "tex0")
 	 * @param unit    - Порядковый номер текстурного слота (0 для GL_TEXTURE0, 1 для GL_TEXTURE1 и т.д.)
 	 */
-	void texIUnit(Shader shader, const char* uniform, GLuint unit);
+	void texIUnit(Shader& shader, const char* uniform, GLuint unit);
 
 	// Делает эту текстуру активной (привязывает к текущему контексту OpenGL)
 	void Bind();
