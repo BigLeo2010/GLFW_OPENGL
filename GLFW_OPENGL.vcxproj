@@ -168,13 +168,17 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="C:\Users\lamba\Desktop\dirt.jpg" />
     <Image Include="C:\Users\lamba\Desktop\grass.jpg" />
+    <Image Include="C:\Users\lamba\Desktop\grass_top.jpg" />
+    <Image Include="grass_text.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

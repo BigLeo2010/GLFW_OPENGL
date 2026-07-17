@@ -78,9 +78,21 @@
     <ClInclude Include="Camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\lamba\Desktop\grass.jpg">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
+    <Image Include="C:\Users\lamba\Desktop\grass_top.jpg">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
+    <Image Include="C:\Users\lamba\Desktop\dirt.jpg">
+      <Filter>Файлы ресурсов\Textures</Filter>
+    </Image>
+    <Image Include="grass_text.png">
       <Filter>Файлы ресурсов\Textures</Filter>
     </Image>
   </ItemGroup>
