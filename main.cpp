@@ -13,6 +13,7 @@
 #include"EBO.h"
 #include"Texture.h"
 #include"Camera.h"
+#include"Mesh.h"
 
 // Интерливированный (interleaved) массив вершинных атрибутов: Позиция (vec3), Цвет (vec3) и Текстура (vec2)
 GLfloat vertices[] = {
@@ -102,24 +103,8 @@ int main()
 	// Инициализация графического конвейера (компиляция и линковка шейдеров)
 	Shader shaderProgram("default.vert", "default.frag");
 
-	VAO VAO1;     // Генерация Vertex Array Object (хранилище состояний вершинных атрибутов)
-	VAO1.Bind();  // Активация VAO для записи последующих конфигураций буферов
-
-	// Выделение VRAM и аллокация данных (копирование массивов в видеопамять)
-	VBO VBO1(vertices, sizeof(vertices)); // Аллокация GL_ARRAY_BUFFER
-	EBO EBO1(indices, sizeof(indices));   // Аллокация GL_ELEMENT_ARRAY_BUFFER (автоматически привязывается к текущему VAO)
-
-	// Описание макета данных (Layout) для вершинных атрибутов внутри VAO:
-	// Атрибут 0 (Координаты): компонентность 3 (vec3), тип float, шаг 24 байта, смещение 0
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
-	// Атрибут 1 (Цвет): компонентность 3 (vec3), тип float, шаг 24 байта, смещение 12 байт
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	// Атрибут 2 (Текстура): компонентность 2 (vec2), тип float, шаг 24 байта, смещение 12 байт
-	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-	VAO1.Unbind(); // Сброс состояния VAO (защита от непреднамеренной мутации стейта)
-	VBO1.Unbind(); // Развязка GL_ARRAY_BUFFER
-	EBO1.Unbind(); // Развязка GL_ELEMENT_ARRAY_BUFFER
+	Mesh cube;
+	cube.CreateMesh(vertices, sizeof(vertices), indices, sizeof(indices));
 
 	//Текстура
 	Texture grassBlock("grass_text.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
@@ -149,21 +134,15 @@ int main()
 		camera.Inputs(window, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		VAO1.Bind(); // Контекстная активация сконфигурированных вершинных атрибутов
-
 		grassBlock.Bind();
-		// Элементный (индексный) рендеринг примитивов по данным из EBO
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+		cube.DrawMesh();
 
 		glfwSwapBuffers(window); // Смена переднего и заднего буферов (Double Buffering)
 
 		glfwPollEvents(); // Опрос системной очереди событий (ввод, изменение геометрии окна)
 	}
 
-	// Освобождение ресурсов GPU (Деаллокация объектов в видеопамяти)
-	VAO1.Delete();
-	VBO1.Delete();
-	EBO1.Delete();
+	cube.DeleteMesh();
 	grassBlock.Delete();
 	shaderProgram.Delete();
 
