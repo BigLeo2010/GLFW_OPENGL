@@ -8,66 +8,16 @@
 
 // Подключение кастомных абстракций (RAII/Wrapper-классов над объектами OpenGL)
 #include"shaderClass.h"
-#include"VAO.h"
-#include"VBO.h"
-#include"EBO.h"
-#include"Texture.h"
 #include"Camera.h"
-#include"Mesh.h"
+#include"GameObject.h"
+#include"Cube.h"
+#include"BlockRegistry.h"
 
-// Интерливированный (interleaved) массив вершинных атрибутов: Позиция (vec3), Цвет (vec3) и Текстура (vec2)
-GLfloat vertices[] = {
-	// Позиция (X, Y, Z)     // Цвет (R, G, B)        // Текстура (U, V)
-
-	// --- ПЕРЕДНЯЯ ГРАНЬ
-	-0.5f, -0.5f,  0.5f,     1.0f, 1.0f, 0.0f,        0.5f, 0.5f, // 0
-	 0.5f, -0.5f,  0.5f,     0.0f, 1.0f, 0.0f,        1.0f, 0.5f, // 1
-	 0.5f,  0.5f,  0.5f,     1.0f, 0.0f, 0.0f,        1.0f, 1.0f, // 2
-	-0.5f,  0.5f,  0.5f,     0.0f, 1.0f, 1.0f,        0.5f, 1.0f, // 3
-
-	// --- ЗАДНЯЯ ГРАНЬ
-	-0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 0.0f,        1.0f, 0.5f, // 4
-	 0.5f, -0.5f, -0.5f,     0.0f, 1.0f, 0.0f,        0.5f, 0.5f, // 5
-	 0.5f,  0.5f, -0.5f,     1.0f, 0.0f, 0.0f,        0.5f, 1.0f, // 6
-	-0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 1.0f,        1.0f, 1.0f, // 7
-
-	// --- ЛЕВАЯ ГРАНЬ
-	-0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 0.0f,        0.5f, 0.5f, // 8
-	-0.5f, -0.5f,  0.5f,     0.0f, 1.0f, 0.0f,        1.0f, 0.5f, // 9
-	-0.5f,  0.5f,  0.5f,     1.0f, 0.0f, 0.0f,        1.0f, 1.0f, // 10
-	-0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 1.0f,        0.5f, 1.0f, // 11
-
-	// --- ПРАВАЯ ГРАНЬ
-	 0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 0.0f,        1.0f, 0.5f, // 12
-	 0.5f, -0.5f,  0.5f,     0.0f, 1.0f, 0.0f,        0.5f, 0.5f, // 13
-	 0.5f,  0.5f,  0.5f,     1.0f, 0.0f, 0.0f,        0.5f, 1.0f, // 14
-	 0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 1.0f,        1.0f, 1.0f, // 15
-
-	 // --- НИЖНЯЯ ГРАНЬ
-	 -0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 0.0f,        0.0f, 0.0f, // 16
-	  0.5f, -0.5f, -0.5f,     0.0f, 1.0f, 0.0f,        0.5f, 0.0f, // 17
-	  0.5f, -0.5f,  0.5f,     1.0f, 0.0f, 0.0f,        0.5f, 0.5f, // 18
-	 -0.5f, -0.5f,  0.5f,     0.0f, 1.0f, 1.0f,        0.0f, 0.5f, // 19
-
-	 // --- ВЕРХНЯЯ ГРАНЬ
-	 -0.5f,  0.5f, -0.5f,     1.0f, 1.0f, 0.0f,        0.0f, 0.5f, // 20
-	  0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 0.0f,        0.5f, 0.5f, // 21
-	  0.5f,  0.5f,  0.5f,     1.0f, 0.0f, 0.0f,        0.5f, 1.0f, // 22
-	 -0.5f,  0.5f,  0.5f,     0.0f, 1.0f, 1.0f,        0.0f, 1.0f  // 23
-};
-
-
-// Индексный массив (Element Array) для явного указания топологии примитивов
-GLuint indices[] = {
-	0,  1,  2,     0,  2,  3,  // Передняя
-	4,  5,  6,     4,  6,  7,  // Задняя
-	8,  9,  10,    8,  10, 11, // Левая
-	12, 13, 14,    12, 14, 15, // Правая
-	16, 17, 18,    16, 18, 19, // Нижняя
-	20, 21, 22,    20, 22, 23  // Верхняя
-};
-
-
+void DrawArrayOfObjects(GameObject objects[], Shader& shader) {
+	for (int i = 0; i < sizeof(objects)-1; ++i) {
+		objects[i].DrawObject(shader);
+	}
+}
 
 int main()
 {
@@ -103,12 +53,24 @@ int main()
 	// Инициализация графического конвейера (компиляция и линковка шейдеров)
 	Shader shaderProgram("default.vert", "default.frag");
 
-	Mesh cube;
-	cube.CreateMesh(vertices, sizeof(vertices), indices, sizeof(indices));
+	BlockRegistry::Initialize(shaderProgram); // Инициализация реестра блоков с передачей шейдера
 
-	//Текстура
-	Texture grassBlock("grass_text.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
-	grassBlock.texIUnit(shaderProgram, "tex0", 0);
+	// Создаем куб, передаем данные геометрии, путь к картинке и шейдер
+	GameObject grass = BlockRegistry::CreateBlock(BlockType::GRASS, glm::vec3(0.0f, 0.0f, 0.0f));
+
+	GameObject wood = BlockRegistry::CreateBlock(BlockType::WOOD, glm::vec3(1.5f, 0.0f, 0.0f));
+
+	GameObject dirt = BlockRegistry::CreateBlock(BlockType::DIRT, glm::vec3(-1.5f, 0.0f, 0.0f));
+
+	GameObject sand = BlockRegistry::CreateBlock(BlockType::SAND, glm::vec3(3.0f, 0.0f, 0.0f));
+
+	GameObject stone = BlockRegistry::CreateBlock(BlockType::STONE, glm::vec3(-3.0f, 0.0f, 0.0f));
+
+	GameObject iron_ore = BlockRegistry::CreateBlock(BlockType::IRON_ORE, glm::vec3(-4.5f, 0.0f, 0.0f));
+
+	GameObject diamond_ore = BlockRegistry::CreateBlock(BlockType::DIAMOND_ORE, glm::vec3(-6.0f, 0.0f, 0.0f));
+
+	GameObject cubes[7] = { grass, wood, dirt, sand, stone, iron_ore, diamond_ore };
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -134,16 +96,14 @@ int main()
 		camera.Inputs(window, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		grassBlock.Bind();
-		cube.DrawMesh();
+		DrawArrayOfObjects(cubes, shaderProgram);
 
 		glfwSwapBuffers(window); // Смена переднего и заднего буферов (Double Buffering)
 
 		glfwPollEvents(); // Опрос системной очереди событий (ввод, изменение геометрии окна)
 	}
 
-	cube.DeleteMesh();
-	grassBlock.Delete();
+	BlockRegistry::Clear(); // Очистка памяти реестра блоков
 	shaderProgram.Delete();
 
 	glfwDestroyWindow(window); // Уничтожение дескриптора окна

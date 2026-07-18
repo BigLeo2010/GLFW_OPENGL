@@ -151,12 +151,14 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
@@ -167,19 +169,27 @@
     <None Include="default.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BlockRegistry.h" />
+    <ClInclude Include="BlockType.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\lamba\Desktop\dirt.jpg" />
-    <Image Include="C:\Users\lamba\Desktop\grass.jpg" />
-    <Image Include="C:\Users\lamba\Desktop\grass_top.jpg" />
-    <Image Include="grass_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\diamond_ore_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\dirt_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\grass_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\iron_ore_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\sand_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\stone_text.png" />
+    <Image Include="C:\Users\lamba\Desktop\wood_text.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
