@@ -71,6 +71,12 @@ public:
         return newBlock;
     }
 
+    static void DrawArrayOfObjects(GameObject objects[], Shader& shader) {
+        for (int i = 0; i < sizeof(objects) - 1; ++i) {
+            objects[i].DrawObject(shader);
+        }
+    }
+
     // Очистка памяти в конце игры
     static void Clear() {
         for (auto& pair : blockTemplates) {
