@@ -10,9 +10,8 @@
 // Подключение кастомных абстракций (RAII/Wrapper-классов над объектами OpenGL)
 #include"shaderClass.h"
 #include"Camera.h"
-#include"GameObject.h"
 #include"Cube.h"
-#include"BlockRegistry.h"
+#include"Texture.h"
 #include"Chunk.h"
 
 
@@ -52,25 +51,31 @@ int main()
 	// Инициализация графического конвейера (компиляция и линковка шейдеров)
 	Shader shaderProgram("default.vert", "default.frag");
 
-	BlockRegistry::Initialize(shaderProgram); // Инициализация реестра блоков с передачей шейдера
-
 	glEnable(GL_DEPTH_TEST);
 
 	//Face culling
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
+	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
-	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 10.0f, 2.0f));
+	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 40.0f, 2.0f));
 
 	double lastTime = glfwGetTime();
 
-	glm::vec3 chunkScale = glm::vec3(12,12,30);
-	glm::vec2 mapScale = glm::vec2(5*chunkScale.x, 5*chunkScale.y);
+	Texture chunkText("textures.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
+	chunkText.texIUnit(shaderProgram, "tex0", 0);
 
-	for (int x = 0; x < mapScale.x; x += chunkScale.x) {
-		for (int y = 0; y < mapScale.y; y += chunkScale.y) {
-			Chunk::CreateChunk(chunkScale, glm::vec3(x, 0, y));
+	std::vector<Chunk> world;
+
+	for (int x = 0; x < 5; x++)
+	{
+		for (int z = 0; z < 5; z++)
+		{
+			world.emplace_back(x, 0, z);
+
+			world.back().FillChunkData();
+			world.back().BuildChunkMesh();
+			world.back().UploadChunkToGPU();
 		}
 	}
 
@@ -92,16 +97,19 @@ int main()
 		camera.Inputs(window, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		//BlockRegistry::DrawArrayOfObjects(cubes, shaderProgram);
+		chunkText.Bind();
 
-		Chunk::RenderChunk(shaderProgram);
+		for (auto& chunk : world)
+		{
+			chunk.DrawChunk(shaderProgram);
+		}
 
 		glfwSwapBuffers(window); // Смена переднего и заднего буферов (Double Buffering)
 
 		glfwPollEvents(); // Опрос системной очереди событий (ввод, изменение геометрии окна)
 	}
 
-	BlockRegistry::Clear(); // Очистка памяти реестра блоков
+	chunkText.Delete();
 	shaderProgram.Delete();
 
 	glfwDestroyWindow(window); // Уничтожение дескриптора окна

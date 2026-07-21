@@ -48,15 +48,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="default.vert">
@@ -87,19 +78,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Cube.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockRegistry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="BlockType.h">
@@ -110,25 +89,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\lamba\Desktop\wood_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\grass_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\dirt_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\iron_ore_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\sand_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\diamond_ore_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\stone_text.png">
+    <Image Include="C:\Users\lamba\Desktop\textures.png">
       <Filter>Файлы ресурсов\Textures</Filter>
     </Image>
   </ItemGroup>
