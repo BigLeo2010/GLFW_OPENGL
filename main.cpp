@@ -66,10 +66,11 @@ int main()
 	chunkText.texIUnit(shaderProgram, "tex0", 0);
 
 	std::vector<Chunk> world;
+	world.reserve(1000);
 
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 20; x++)
 	{
-		for (int z = 0; z < 5; z++)
+		for (int z = 0; z < 20; z++)
 		{
 			world.emplace_back(x, 0, z);
 
@@ -95,7 +96,7 @@ int main()
 
 		//Камера
 		camera.Inputs(window, deltaTime);
-		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+		camera.Matrix(45.0f, 0.1f, 2000.0f, shaderProgram, "camMatrix");
 
 		chunkText.Bind();
 

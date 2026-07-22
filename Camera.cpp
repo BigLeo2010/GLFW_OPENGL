@@ -28,11 +28,11 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime) {
 
 	// Ускорение при зажатом Left Shift (спринт)
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		speed = 4.0f; // ИЗМЕНЕНО: Значения увеличены, так как теперь они умножаются на секунды
+		speed = 10.0f; // ИЗМЕНЕНО: Значения увеличены, так как теперь они умножаются на секунды
 	}
 	// Возврат к обычной скорости, если Shift отпущен
 	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) {
-		speed = 1.5f; // ИЗМЕНЕНО: Значения увеличены
+		speed = 5.0f; // ИЗМЕНЕНО: Значения увеличены
 	}
 
 	// ДОБАВЛЕНО: Расчет скорости для текущего кадра на основе deltaTime

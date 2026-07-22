@@ -87,6 +87,9 @@
     <ClInclude Include="Chunk.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="PerlinNoise2D.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\lamba\Desktop\textures.png">
