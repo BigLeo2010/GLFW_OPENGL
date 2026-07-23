@@ -65,51 +65,59 @@ void Camera::Inputs(GLFWwindow* window, float deltaTime) {
 		Position += currentSpeed * -Up; // ИЗМЕНЕНО: Заменено на currentSpeed
 	}
 
-	// --- ПОВОРОТ КАМЕРЫ МЫШЬЮ (ПО ЗАЖАТИЮ ПКМ) ---
+	// --- ПЕРЕКЛЮЧЕНИЕ КАМЕРЫ КНОПКОЙ O (TOGGLE) ---
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-		// Скрываем курсор мыши, чтобы он не мешал обзору
+	// Эти переменные должны быть объявлены вне цикла или быть static
+	static bool isPressed = false;   // Запоминает, была ли кнопка зажата в прошлом кадре
+	static bool canDoSmth = true;    // По умолчанию камера работает, курсор скрыт
+
+	// Проверяем текущее физическое состояние кнопки O
+	bool isNowPressed = (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS);
+
+	// Если кнопку только что нажали (в прошлом кадре она НЕ была нажата)
+	if (isNowPressed && !isPressed) {
+		canDoSmth = !canDoSmth; // Инвертируем состояние (включаем/выключаем камеру)
+		isPressed = true;       // Блокируем повторное срабатывание, пока кнопку удерживают
+	}
+	// Если кнопку полностью отпустили
+	else if (!isNowPressed && isPressed) {
+		isPressed = false;      // Сбрасываем блокировку, готовы к новому клику
+	}
+
+	if (canDoSmth) {
+		// Режим обзора: скрываем курсор
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-		// Если это самый первый кадр клика, принудительно перемещаем мышь в центр, чтобы не было рывка камеры
 		if (firstClick) {
-			glfwSetCursorPos(window, (width / 2), (height / 2));
+			glfwSetCursorPos(window, (width / 2.0), (height / 2.0));
 			firstClick = false;
 		}
 
-		// Переменные для хранения текущих координат курсора
 		double mouseX;
 		double mouseY;
-		// Получаем позицию мыши от GLFW
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
-		// Вычисляем смещение мыши относительно центра экрана и умножаем на чувствительность
-		// rotX отвечает за наклон ВВЕРХ-ВНИЗ (зависит от изменения по Y)
-		// rotY отвечает за поворот ВЛЕВО-ВПРАВО (зависит от изменения по X)
-		float rotX = sensitivity * (float)(mouseY - (height / 2));
-		float rotY = sensitivity * (float)(mouseX - (width / 2));
+		float rotX = sensitivity * (float)(mouseY - (height / 2.0));
+		float rotY = sensitivity * (float)(mouseX - (width / 2.0));
 
-		// Вычисляем гипотетическое новое направление взгляда по вертикали. 
-		// Вращаем вокруг оси "вправо" (которая является перпендикуляром взгляда и верха)
 		glm::vec3 newOrientation = glm::rotate(Orientation, -rotX, glm::normalize(glm::cross(Orientation, Up)));
 
-		// Защита от переворота камеры «через голову» (Gimbal Lock)
-		// Если угол между новым взглядом и осью Up (или -Up) меньше 5 градусов — запрещаем поворот
-		if (!((glm::angle(newOrientation, Up) <= glm::radians(5.0f)) || (glm::angle(newOrientation, -Up) <= glm::radians(5.0f)))) {
+		// Защита от переворота головы
+		if (glm::angle(newOrientation, Up) > glm::radians(5.0f) && glm::angle(newOrientation, -Up) > glm::radians(5.0f)) {
 			Orientation = newOrientation;
 		}
 
-		// Вращаем камеру по горизонтали вокруг глобальной оси Up (влево-вправо)
 		Orientation = glm::rotate(Orientation, -rotY, Up);
 
-		// Возвращаем курсор обратно в центр экрана для следующего кадра
-		glfwSetCursorPos(window, (width / 2), (height / 2));
+		// Возвращаем курсор обратно в центр
+		glfwSetCursorPos(window, (width / 2.0), (height / 2.0));
 	}
-	// Если правая кнопка мыши отпущена
-	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-		// Возвращаем стандартный курсор
+	else {
+		// Режим курсора: возвращаем стандартную мышь
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		// Сбрасываем флаг, чтобы при следующем клике позиция мыши отцентрировалась корректно
+
+		// Важно: взводим флаг в true, чтобы при возврате в режим камеры 
+		// не было резкого прыжка из-за старых координат мыши
 		firstClick = true;
 	}
 }

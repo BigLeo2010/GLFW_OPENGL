@@ -172,6 +172,7 @@
     <ClInclude Include="Cube.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="PerlinNoise2D.h" />
+    <ClInclude Include="Raycast.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VAO.h" />

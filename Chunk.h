@@ -20,6 +20,8 @@ public:
     int chunkY;
     int chunkZ;
 
+    glm::vec3 position;
+
     int chunkData[16][60][16];
 
     PerlinNoise noiseGenerator;
@@ -33,7 +35,35 @@ public:
         chunkX = x;
         chunkY = y;
         chunkZ = z;
+
+        position = glm::vec3(chunkX, chunkY, chunkZ);
     }
+
+    // 1. Проверка наличия блока по локальным координатам чанка
+    bool HasBlockAt(int x, int y, int z) const {
+        // Безопасная проверка границ массива, чтобы избежать вылета (Crash)
+        if (x < 0 || x >= CHUNK_SIZE_X ||
+            y < 0 || y >= CHUNK_SIZE_Y ||
+            z < 0 || z >= CHUNK_SIZE_Z) {
+            return false;
+        }
+        return chunkData[x][y][z] != 0; // Возвращает true, если это не воздух
+    }
+
+    // 2. Установка блока по локальным координатам чанка
+    void SetBlock(int x, int y, int z, int blockType) {
+        if (x >= 0 && x < CHUNK_SIZE_X &&
+            y >= 0 && y < CHUNK_SIZE_Y &&
+            z >= 0 && z < CHUNK_SIZE_Z) {
+            chunkData[x][y][z] = blockType;
+        }
+    }
+
+    // 3. Геттеры координат для класса Raycast (чтобы он понимал, какой это чанк в мировых координатах)
+    int GetX() const { return chunkX; }
+    int GetY() const { return chunkY; }
+    int GetZ() const { return chunkZ; }
+
 
     void FillChunkData() {
         for (int x = 0; x < CHUNK_SIZE_X; x++) {

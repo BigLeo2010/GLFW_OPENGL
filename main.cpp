@@ -1,8 +1,10 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include<iostream>
 #include<glad//glad.h>
 #include<GLFW/glfw3.h>
 #include<stb/stb_image.h>
 #include<glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 #include<glm/gtc//matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 #include<cstdlib>
@@ -13,7 +15,20 @@
 #include"Cube.h"
 #include"Texture.h"
 #include"Chunk.h"
+#include"Raycast.h"
 
+
+int findClosestVectorIndex(const glm::vec3& x, const std::vector<glm::vec3>& list) {
+	if (list.empty()) return -1; // Обработка пустого списка
+
+	auto closest = std::min_element(list.begin(), list.end(),
+		[&x](const glm::vec3& a, const glm::vec3& b) {
+			return glm::distance2(x, a) < glm::distance2(x, b);
+		}
+	);
+
+	return std::distance(list.begin(), closest);
+}
 
 int main()
 {
@@ -34,7 +49,7 @@ int main()
 	GLfloat backgroundColor[] = { 70.0f/255.0f, 126.0f/255.0f, 199.0f/255.0f }; // Нормализованные RGBA значения цвета очистки
 
 	// Инстанцирование объекта окна и создание ассоциированного контекста OpenGL
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Hello world!", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Smoke'nCraft", NULL, NULL);
 
 	if (window == NULL) {
 		std::cout << "Failed to create a window" << std::endl;
@@ -80,6 +95,9 @@ int main()
 		}
 	}
 
+	bool leftMousePressedLastFrame = false;
+	bool rightMousePressedLastFrame = false;
+
 	// Основной цикл обработки сообщений и рендеринга (Render Loop)
 	while (!glfwWindowShouldClose(window))
 	{
@@ -97,6 +115,63 @@ int main()
 		//Камера
 		camera.Inputs(window, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 2000.0f, shaderProgram, "camMatrix");
+
+		bool isRightClicked = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+
+		if (isRightClicked && !rightMousePressedLastFrame)
+		{
+			// Запускаем трассировку луча длиной 5.5 блоков
+			Raycast::HitResult hitResult = Raycast::Trace(camera, world, 10.0f);
+
+			// Если во что-то попали и целевой чанк существует
+			if (hitResult.hit && hitResult.placeChunk != nullptr)
+			{
+				// Переводим мировую позицию установки в локальные координаты чанка
+				int cx = hitResult.placeChunk->GetX();
+				int cz = hitResult.placeChunk->GetZ();
+
+				int localX = hitResult.placePos.x - (cx * Chunk::CHUNK_SIZE_X);
+				int localY = hitResult.placePos.y;
+				int localZ = hitResult.placePos.z - (cz * Chunk::CHUNK_SIZE_Z);
+
+				// Ставим блок Травы (ID = 1)
+				hitResult.placeChunk->SetBlock(localX, localY, localZ, 3);
+
+				// Перегенерация меша и обновление данных на GPU
+				hitResult.placeChunk->BuildChunkMesh();
+				hitResult.placeChunk->UploadChunkToGPU(); // Убедись, что метод в твоем main называется именно так
+			}
+		}
+		rightMousePressedLastFrame = isRightClicked;
+
+
+		bool isLeftClicked = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+		if (isLeftClicked && !leftMousePressedLastFrame)
+		{
+			Raycast::HitResult hitResult = Raycast::Trace(camera, world, 10.0f);
+
+			// Если во что-то попали и целевой чанк существует
+			if (hitResult.hit && hitResult.targetChunk != nullptr)
+			{
+				// Переводим мировую позицию установки в локальные координаты чанка
+				int cx = hitResult.targetChunk->GetX();
+				int cz = hitResult.targetChunk->GetZ();
+
+				int localX = hitResult.blockPos.x - (cx * Chunk::CHUNK_SIZE_X);
+				int localY = hitResult.blockPos.y;
+				int localZ = hitResult.blockPos.z - (cz * Chunk::CHUNK_SIZE_Z);
+
+				// Удаляем блок
+				hitResult.targetChunk->SetBlock(localX, localY, localZ, 0);
+
+				// Перегенерация меша и обновление данных на GPU
+				hitResult.targetChunk->BuildChunkMesh();
+				hitResult.targetChunk->UploadChunkToGPU(); // Убедись, что метод в твоем main называется именно так
+			}
+		}
+		leftMousePressedLastFrame = isLeftClicked;
+
 
 		chunkText.Bind();
 
