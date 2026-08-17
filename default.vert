@@ -11,6 +11,7 @@ out vec2 texCoord;
 
 uniform mat4 camMatrix;
 uniform mat4 model;
+uniform vec2 offset;
 
 void main()
 {
@@ -19,5 +20,5 @@ void main()
 	gl_Position = camMatrix * model * vec4(aPos, 1.0f);
 	
 	color = aColor; // Передаем входной цвет во фрагментный шейдер без изменений
-	texCoord = aTex;
+	texCoord = aTex * offset;
 }

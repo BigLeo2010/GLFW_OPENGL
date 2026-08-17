@@ -59,9 +59,20 @@ int main()
 	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
 
 	double lastTime = glfwGetTime();
+	double lastTimeFPS = glfwGetTime();
+	int nbFrames = 0;
 	GLuint timeID = glGetUniformLocation(shaderProgram.ID, "time");
 	
-	GameObject cubik(Cube::vertices, sizeof(Cube::vertices), Cube::indices, sizeof(Cube::indices), "diamond_ore_text.png", shaderProgram);
+	GameObject cubik(Cube::vertices, sizeof(Cube::vertices), Cube::indices, sizeof(Cube::indices), "wall.jpg", shaderProgram);
+	cubik.transform.rotation = glm::vec3(45.0f, 45.0f, 45.0f);
+
+	GameObject plane(Cube::vertices, sizeof(Cube::vertices), Cube::indices, sizeof(Cube::indices), "floor.jpg", shaderProgram);
+	plane.transform.scale.y = 0.1f;
+	plane.transform.scale.x = 10.0f;
+	plane.transform.scale.z = 10.0f;
+	plane.transform.position.y = -3.0f;
+
+	GLuint offsetID = glGetUniformLocation(shaderProgram.ID, "offset");
 
 	// Основной цикл обработки сообщений и рендеринга (Render Loop)
 	while (!glfwWindowShouldClose(window))
@@ -72,20 +83,36 @@ int main()
 
 		shaderProgram.Activate(); // Инжект шейдерной программы в текущий пайплайн
 
-		//Дельта тайм
+		//Дельта тайм и FPS
 		double curTime = glfwGetTime();
 		float deltaTime = (float)(curTime - lastTime);
 		lastTime = curTime;
 
 		glUniform1f(timeID, curTime);
 
+		nbFrames++;
+
+		if (curTime - lastTimeFPS >= 1.0)
+		{
+			double fps = double(nbFrames);
+
+			std::string windowTitle = "FPS: " + std::to_string(int(fps));
+
+			glfwSetWindowTitle(window, windowTitle.c_str());
+
+			nbFrames = 0;
+			lastTimeFPS += 1.0;
+		}
+
 		//Камера
 		camera.Inputs(window, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		cubik.transform.position.x = sinf(curTime);
-		cubik.transform.position.z = cosf(curTime);
+		glUniform2f(offsetID, 0.8f, 0.8f);
 		cubik.DrawObject(shaderProgram);
+
+		glUniform2f(offsetID, 3.0f, 3.0f);
+		plane.DrawObject(shaderProgram);
 
 		glfwSwapBuffers(window); // Смена переднего и заднего буферов (Double Buffering)
 
@@ -93,6 +120,7 @@ int main()
 	}
 
 	cubik.DeleteObject();
+	plane.DeleteObject();
 	shaderProgram.Delete();
 
 	glfwDestroyWindow(window); // Уничтожение дескриптора окна

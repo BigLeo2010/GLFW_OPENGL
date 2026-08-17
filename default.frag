@@ -18,5 +18,5 @@ void main()
 
 	vec3 newColor = vec3(rCol,gCol,bCol);
 
-	FragColor = vec4(newColor, 1.0);  /*texture(tex0, texCoord)*/;
+	FragColor = /*vec4(newColor, 1.0);*/  texture(tex0, texCoord);
 }

@@ -101,25 +101,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\lamba\Desktop\wood_text.png">
+    <Image Include="C:\Users\lamba\Desktop\wall.jpg">
       <Filter>Файлы ресурсов\Textures</Filter>
     </Image>
-    <Image Include="C:\Users\lamba\Desktop\grass_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\dirt_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\iron_ore_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\sand_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\diamond_ore_text.png">
-      <Filter>Файлы ресурсов\Textures</Filter>
-    </Image>
-    <Image Include="C:\Users\lamba\Desktop\stone_text.png">
+    <Image Include="C:\Users\lamba\Desktop\floor.jpg">
       <Filter>Файлы ресурсов\Textures</Filter>
     </Image>
   </ItemGroup>
