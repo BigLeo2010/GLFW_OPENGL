@@ -6,21 +6,18 @@
 #include<glm/gtc//matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 #include<cstdlib>
+#include<cmath>
 
 // Подключение кастомных абстракций (RAII/Wrapper-классов над объектами OpenGL)
 #include"shaderClass.h"
 #include"Camera.h"
 #include"GameObject.h"
 #include"Cube.h"
-#include"BlockRegistry.h"
-#include"Chunk.h"
 
 
 int main()
 {
 	system("chcp 1251 > nul"); // Локализация вывода консоли (кодовая страница Windows-1251)
-
-	srand(static_cast<unsigned int>(time(0)));
 
 	glfwInit(); // Инициализация подсистемы GLFW
 
@@ -52,8 +49,6 @@ int main()
 	// Инициализация графического конвейера (компиляция и линковка шейдеров)
 	Shader shaderProgram("default.vert", "default.frag");
 
-	BlockRegistry::Initialize(shaderProgram); // Инициализация реестра блоков с передачей шейдера
-
 	glEnable(GL_DEPTH_TEST);
 
 	//Face culling
@@ -61,18 +56,12 @@ int main()
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CCW);
 
-	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 10.0f, 2.0f));
+	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
 
 	double lastTime = glfwGetTime();
-
-	glm::vec3 chunkScale = glm::vec3(12,12,30);
-	glm::vec2 mapScale = glm::vec2(5*chunkScale.x, 5*chunkScale.y);
-
-	for (int x = 0; x < mapScale.x; x += chunkScale.x) {
-		for (int y = 0; y < mapScale.y; y += chunkScale.y) {
-			Chunk::CreateChunk(chunkScale, glm::vec3(x, 0, y));
-		}
-	}
+	GLuint timeID = glGetUniformLocation(shaderProgram.ID, "time");
+	
+	GameObject cubik(Cube::vertices, sizeof(Cube::vertices), Cube::indices, sizeof(Cube::indices), "diamond_ore_text.png", shaderProgram);
 
 	// Основной цикл обработки сообщений и рендеринга (Render Loop)
 	while (!glfwWindowShouldClose(window))
@@ -88,20 +77,22 @@ int main()
 		float deltaTime = (float)(curTime - lastTime);
 		lastTime = curTime;
 
+		glUniform1f(timeID, curTime);
+
 		//Камера
 		camera.Inputs(window, deltaTime);
 		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
-		//BlockRegistry::DrawArrayOfObjects(cubes, shaderProgram);
-
-		Chunk::RenderChunk(shaderProgram);
+		cubik.transform.position.x = sinf(curTime);
+		cubik.transform.position.z = cosf(curTime);
+		cubik.DrawObject(shaderProgram);
 
 		glfwSwapBuffers(window); // Смена переднего и заднего буферов (Double Buffering)
 
 		glfwPollEvents(); // Опрос системной очереди событий (ввод, изменение геометрии окна)
 	}
 
-	BlockRegistry::Clear(); // Очистка памяти реестра блоков
+	cubik.DeleteObject();
 	shaderProgram.Delete();
 
 	glfwDestroyWindow(window); // Уничтожение дескриптора окна

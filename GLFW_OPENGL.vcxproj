@@ -185,10 +185,7 @@
     <None Include="default.frag" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BlockRegistry.h" />
-    <ClInclude Include="BlockType.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Chunk.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="GameObject.h" />

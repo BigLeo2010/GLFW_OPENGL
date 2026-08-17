@@ -12,11 +12,11 @@ vec3 localColor = color;
 
 void main()
 {
-	float rCol = localColor.x * sin(time * 0.8) * 0.5 + 0.5;
-	float gCol = localColor.y * sin(time * 0.8) * 0.5 + 0.5;
-	float bCol = localColor.z * sin(time * 0.8) * 0.5 + 0.5;
+	float rCol = localColor.x * sin(time * 0.2) * 0.8 + 0.5;
+	float gCol = localColor.y * sin(time * 0.8) * 0.1 + 0.5;
+	float bCol = localColor.z * sin(time * 0.5) * 0.3 + 0.5;
 
 	vec3 newColor = vec3(rCol,gCol,bCol);
 
-	FragColor = /*vec4(newColor, 1.0f);*/  texture(tex0, texCoord);
+	FragColor = vec4(newColor, 1.0);  /*texture(tex0, texCoord)*/;
 }
