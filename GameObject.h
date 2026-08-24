@@ -11,13 +11,18 @@ public:
 	Mesh mesh;
 	Texture texture;
 	Transform transform;
+	bool hasTexture;
 
 	GameObject(const GLfloat* vertices, GLsizeiptr vertSize,
 		const GLuint* indices, GLsizeiptr indSize,
 		const char* texPath, Shader& shader);
 
+	GameObject(const GLfloat* vertices, GLsizeiptr vertSize,
+		const GLuint* indices, GLsizeiptr indSize,
+		glm::vec3 RGB, Shader& shader);
+
 	void DrawObject(Shader& shader); // Передаем объект шейдера, а не просто ID
-	void DeleteObject();
+	~GameObject();
 };
 
 #endif

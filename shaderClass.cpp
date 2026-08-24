@@ -57,7 +57,7 @@ void Shader::Activate() {
 }
 
 // Метод для очистки памяти
-void Shader::Delete() {
+Shader::~Shader() {
 	glDeleteProgram(ID); // Удаляем шейдерную программу с видеокарты
 }
 
@@ -77,5 +77,35 @@ void Shader::compileErrors(unsigned int shader, const char* type) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 			std::cout << "SHADER LINKING ERROR for:" << type << "\n" << std::endl;
 		}
+	}
+}
+
+void Shader::SetVec3(const std::string name, float x, float y, float z) {
+	GLint location = glGetUniformLocation(ID, name.c_str());
+	if (location == -1) {
+		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
+	}
+	else {
+		glUniform3f(location, x, y, z);
+	}
+}
+
+void Shader::SetVec2(const std::string name, float x, float y) {
+	GLint location = glGetUniformLocation(ID, name.c_str());
+	if (location == -1) {
+		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
+	}
+	else {
+		glUniform2f(location, x, y);
+	}
+}
+
+void Shader::SetFloat(const std::string name, float value) {
+	GLint location = glGetUniformLocation(ID, name.c_str());
+	if (location == -1) {
+		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
+	}
+	else {
+		glUniform1f(location, value);
 	}
 }

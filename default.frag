@@ -1,22 +1,32 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 color;      // Исходный интерполированный цвет вершин (R, G, B)
-
 in vec2 texCoord;
 
-uniform float time; // Время из C++
+in vec3 normal;
+in vec3 curPos;
+
 uniform sampler2D tex0;
 
-vec3 localColor = color;
+vec3 lightColor = vec3(1.0,1.0,1.0);
+
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+
+float ambient = 0.2;
+float specularStrength = 0.5;
 
 void main()
 {
-	float rCol = localColor.x * sin(time * 0.2) * 0.8 + 0.5;
-	float gCol = localColor.y * sin(time * 0.8) * 0.1 + 0.5;
-	float bCol = localColor.z * sin(time * 0.5) * 0.3 + 0.5;
+	vec3 normal = normalize(normal);
+	vec3 lightDirection = normalize(lightPos - curPos);
 
-	vec3 newColor = vec3(rCol,gCol,bCol);
+	vec3 viewDir = normalize(viewPos - curPos);
+	vec3 reflectDir = reflect(-lightDirection, normal); 
 
-	FragColor = /*vec4(newColor, 1.0);*/  texture(tex0, texCoord);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32) * specularStrength;
+
+	float diffuse = max(dot(normal, lightDirection), 0.0);
+
+	FragColor = texture(tex0, texCoord) * vec4(lightColor, 1.0) * (diffuse + ambient + spec);
 }

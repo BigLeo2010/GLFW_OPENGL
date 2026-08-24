@@ -19,6 +19,7 @@ public:
 	 * @param slot      - Текстурный слот/юнит, в который загружается текстура (например, GL_TEXTURE0)
 	 * @param pixelType - Тип данных пикселей изображения (обычно GL_UNSIGNED_BYTE)
 	 */
+	Texture();
 	Texture(const char* image, GLenum texType, GLenum slot, GLenum pixelType);
 
 	/**

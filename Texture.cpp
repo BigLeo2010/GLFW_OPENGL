@@ -1,5 +1,12 @@
 #include"Texture.h"
 
+
+// Реализуем пустой конструктор
+Texture::Texture() {
+	// Оставляем пустым или ставим ID в 0
+	ID = 0;
+}
+
 // Конструктор класса: загружает изображение, создает текстурный объект и настраивает параметры
 Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum pixelType) {
 	// Сохраняем тип текстуры (например, GL_TEXTURE_2D) во внутреннюю переменную класса

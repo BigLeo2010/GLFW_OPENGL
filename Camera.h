@@ -20,6 +20,7 @@ public:
 	glm::vec3 Position;                             // Позиция камеры в мировых координатах
 	glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f); // Направление взгляда (по умолчанию вперед по оси -Z)
 	glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);     // Вектор "верх" для камеры (обычно ось +Y)
+	glm::mat4 cameraMatrix = glm::mat4(1.0f);
 
 	// Флаг первого клика (нужен, чтобы избежать резкого рывка камеры при зажатии мыши)
 	bool firstClick = true;
@@ -35,8 +36,9 @@ public:
 	// Конструктор класса камеры
 	Camera(int width, int height, glm::vec3 position);
 
-	// Обновляет матрицу вида/проекции и отправляет ее в шейдер
-	void Matrix(float FOVdeg, float nearPlane, float farPlane, Shader& shader, const char* uniform);
+	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane);
+
+	void Matrix(Shader& shader, const char* uniform);
 
 	// Обрабатывает ввод с клавиатуры и мыши каждую итерацию игрового цикла
 	void Inputs(GLFWwindow* window, float deltaTime);

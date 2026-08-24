@@ -182,7 +182,11 @@
     <Text Include="default.vert" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="colorShader.frag" />
+    <None Include="colorShader.vert" />
     <None Include="default.frag" />
+    <None Include="Water.frag" />
+    <None Include="Water.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

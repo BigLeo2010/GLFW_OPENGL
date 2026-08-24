@@ -9,17 +9,34 @@ GameObject::GameObject(const GLfloat* vertices, GLsizeiptr vertSize,
 	mesh.CreateMesh((GLfloat*)vertices, vertSize, (GLuint*)indices, indSize);
 
 	texture.texIUnit(shader, "tex0", 0);
+
+	hasTexture = true;
+}
+
+GameObject::GameObject(const GLfloat* vertices, GLsizeiptr vertSize,
+	const GLuint* indices, GLsizeiptr indSize,
+	glm::vec3 RGB, Shader& shader){
+
+	mesh.CreateMesh((GLfloat*)vertices, vertSize, (GLuint*)indices, indSize);
+
+	GLuint colorID = glGetUniformLocation(shader.ID, "color");
+
+	shader.Activate();
+
+	glUniform3f(colorID, RGB.x, RGB.y, RGB.z);
+
+	hasTexture = false;
 }
 
 void GameObject::DrawObject(Shader& shader) {
-	texture.Bind();
+	if (hasTexture) texture.Bind();
 
 	transform.InitTransform(shader.ID);
 
 	mesh.DrawMesh();
 }
 
-void GameObject::DeleteObject() {
+GameObject::~GameObject() {
 	mesh.DeleteMesh();
-	texture.Delete();
+	if (hasTexture) texture.Delete();
 }
