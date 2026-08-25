@@ -16,9 +16,9 @@ uniform mat4 camMatrix;
 uniform mat4 model;
 uniform vec2 offset;
 
-float amplitude = 0.2;
-float frequency = 2.0;
-float speed = 1.5;
+float amplitude = 0.15;
+float frequency = 1.5;
+float speed = 1.0;
 
 void main()
 {
